@@ -2,6 +2,7 @@ import cv2
 import imutils
 import numpy as np
 import argparse
+import nms
     
 def detect(frame):
     bounding_box_coordinates, weights = HOGCV.detectMultiScale(frame, winStride = (8, 8), padding = (8, 8), scale = 1.03)
@@ -49,9 +50,7 @@ def detectByCamera(writer):
         check, frame = video.read()
         frame = cv2.resize(frame, (640, 480))
         frame = detect(frame)
-        faces = face_cascade.detectMultiScale(frame, 1.1, 4)
-        for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
         if writer is not None:
             writer.write(frame)
 
@@ -111,7 +110,6 @@ def argsParser():
     return args
 
 if __name__ == "__main__":
-    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     HOGCV = cv2.HOGDescriptor()
     HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
