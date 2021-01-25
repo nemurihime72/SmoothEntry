@@ -23,28 +23,27 @@ else:
     #initialise a dict that maps string to their corresponding opencv obj tracker implementation
     OPENCV_OBJECT_TRACKERS = {
         "csrt": cv2.TrackerCSRT_create,
-        "kcf": cv2.TrackerKCF_create,
+        #"kcf": cv2.TrackerKCF_create,
 		#"boosting": cv2.TrackerBoosting_create,
-		"mil": cv2.TrackerMIL_create
+		#"mil": cv2.TrackerMIL_create
 		#"tld": cv2.TrackerTLD_create,
 		#"medianflow": cv2.TrackerMedianFlow_create,
 		#"mosse": cv2.TrackerMOSSE_create
     }
 
     #grab appropriate obj tracker using dict of opencv obj tracker objects
-    tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]]
+    tracker = cv2.TrackerCSRT_create() #OPENCV_OBJECT_TRACKERS[args["tracker"]]()
 
 #init bounding box coords of obj to track
 initBB = None
 
-if not args.get("video", False):
-    print("[INFO] starting video stream...")
-    vs = VideoStream(src=0).start()
-    time.sleep(1.0)
+print("[INFO] starting video stream...")
+vs = VideoStream(src=0).start()
+time.sleep(1.0)
 
 #else, grab ref to vid file
-else:
-    vs = cv2.VideoCapture(args["video"])
+#else:
+#    vs = cv2.VideoCapture(args["video"])
 
 #init fps throughput estimator
 fps = None
@@ -81,7 +80,7 @@ while True:
         info = [
             ("Tracker", args["tracker"]),
             ("Success", "Yes" if success else "No"),
-            ("FPS", "{:.2f}".format(fps.fps())),
+            #("FPS", "{:.2f}".format(fps.fps())),
         ]
 
         #loop over info tuples and draw on frame
@@ -89,31 +88,32 @@ while True:
             text = "{}: {}".format(k, v)
             cv2.putText(frame, text, (10, H - ((i * 20) + 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
-        #show output frame
-        cv2.imshow("Frame", frame)
-        key = cv2.waitKey(1) & 0xFF
+    #show output frame
+    cv2.imshow("Frame", frame)
+    key = cv2.waitKey(1) & 0xFF
 
-        #if 's' key is selected, we are going to 'select' a bounding box to track
-        if key == ord("s"):
-            #select bounding box of object we want to track (press enter or space after selecting ROI)
-            initBB = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair = True)
+    #if 's' key is selected, we are going to 'select' a bounding box to track
+    if key == ord("s"):
+        #select bounding box of object we want to track (press enter or space after selecting ROI)
+        initBB = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair = True)
 
-            #start opencv obj tracker using supplied bounding box coords, then start fps throughput estimator
-            tracker.init(frame, initBB)
-            fps = FPS().start()
+        #start opencv obj tracker using supplied bounding box coords, then start fps throughput estimator
+        tracker.init(frame, initBB)
+        fps = FPS().start()
 
-        #if 'q' key pressed, break loop
-        elif key == ord("q"):
-            break
+    #if 'q' key pressed, break loop
+    elif key == ord("q"):
+        break
     
-    #if using webcam, release pointer
-    if not args.get("video", False):
-        vs.stop()
+# #if using webcam, release pointer
+# if not args.get("video", False):
+#     vs.stop()
 
-    #else, release file pointer
-    else:
-        vs.release()
+# #else, release file pointer
+# else:
+#     vs.release()
+vs.stop()
 
-    #close all windows
-    cv2.destroyAllWindows()
+#close all windows
+cv2.destroyAllWindows()
  
