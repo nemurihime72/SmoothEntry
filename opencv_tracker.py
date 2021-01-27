@@ -103,7 +103,7 @@ while True:
         #select bounding box of object we want to track (press enter or space after selecting ROI)
     #initBB = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair = True)
     #print(initBB)
-    bounding_box_coords = HOGCV.detectMultiScale(frame, winStride = (8,8), padding = (8, 8), scale = 1.03)
+    bounding_box_coords, weights = HOGCV.detectMultiScale(frame, winStride = (8,8), padding = (8, 8), scale = 1.03)
     #person = 0
     # for x,y,w,h in bounding_box_coords:
     #     cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0) ,2)
@@ -112,8 +112,12 @@ while True:
     #initBB = HOGCV.detectMultiScale(frame, winStride = (8,8), padding = (8, 8), scale = 1.03)
 
     #start opencv obj tracker using supplied bounding box coords, then start fps throughput estimator
-    print(bounding_box_coords)
-    #tracker.init(frame, initBB)
+    print(bounding_box_coords, weights)
+    if (bounding_box_coords is None):
+        initBB = None
+    else:
+        initBB = bounding_box_coords
+        tracker.init(frame, initBB)
     fps = FPS().start()
 
     #if 'q' key pressed, break loop
