@@ -6,6 +6,7 @@
 # import the necessary packages
 from pyimagesearch.centroidtracker import CentroidTracker
 from imutils.video import VideoStream
+from imutils.video import FPS
 import numpy as np
 import argparse
 import imutils
@@ -28,7 +29,10 @@ ct = CentroidTracker()
 
 # initialize the list of class labels MobileNet SSD was trained to
 # detect, then generate a set of bounding box colors for each class
-CLASSES = ["background", "person"]
+CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
+	"bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+	"dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+	"sofa", "train", "tvmonitor"]
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 # load our serialized model from disk
