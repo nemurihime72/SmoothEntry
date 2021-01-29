@@ -59,7 +59,7 @@ while True:
 		(H, W) = frame.shape[:2]
 		
 	bounding_box_coordinates, weights = HOGCV.detectMultiScale(frame, winStride = (8, 8), padding = (8, 8), scale = 1.03)
-
+	rects = []
 	'''# construct a blob from the frame, pass it through the network,
 	# obtain our output predictions, and initialize the list of
 	# bounding box rectangles
@@ -95,6 +95,12 @@ while True:
 			#y = startY - 15 if startY - 15 > 15 else startY + 15
 			#cv2.putText(frame, label, (startX, y),
 			#	cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[box], 2)'''
+	for x,y,w,h in bounding_box_coordinates:
+        person += 1
+        cv2.rectangle(frame, (x,y), (x+w,y+h), (0,255,0) ,2)
+        cv2.putText(frame, '{0} {1}'.format(x, y), (x, y+20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0, 255), 1)
+        cv2.putText(frame, f'person {person}', (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,0,255), 1)
+		rects.append([x, y, x+w, y+h])
 
 	# update our centroid tracker using the computed set of bounding
 	# box rectangles
