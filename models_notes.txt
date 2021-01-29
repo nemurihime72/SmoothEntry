@@ -2,6 +2,8 @@ HOG vs haar cascades - HOG is more accurate, but slower (more computationally ex
 
 YOLO vs HOG - YOLO is very fast, maybe faster than HOG
 
+SSD - single shot detector, may be fast for slower systems.
+
 which to use: for our use case, perhaps accuracy>speed. we do not want to have false positives, and we do not need a super fast speed, maybe 15-25 fps of detection is sufficient, especially since detection is run on every frame. 
 getting CSRT tracker to work has not been successful, more understanding of the code is required to get it up and running with HOG. 
 pyimagesearch has a centroid tracker, which allows the use of pretrained models. maybe yolov3 can be used as a test, since it is fast and generally accurate

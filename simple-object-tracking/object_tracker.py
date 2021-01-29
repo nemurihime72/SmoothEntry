@@ -7,6 +7,7 @@
 from pyimagesearch.centroidtracker import CentroidTracker
 from imutils.video import VideoStream
 from imutils.video import FPS
+from imutils.object_detection import non_max_suppression	
 import numpy as np
 import argparse
 import imutils
@@ -26,6 +27,9 @@ args = vars(ap.parse_args())
 # initialize our centroid tracker and frame dimensions
 ct = CentroidTracker()
 (H, W) = (None, None)
+
+HOGCV = cv2.HOGDescriptor()
+HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 # initialize the list of class labels MobileNet SSD was trained to
 # detect, then generate a set of bounding box colors for each class
@@ -53,8 +57,10 @@ while True:
 	# if the frame dimensions are None, grab them
 	if W is None or H is None:
 		(H, W) = frame.shape[:2]
+		
+	bounding_box_coordinates, weights = HOGCV.detectMultiScale(frame, winStride = (8, 8), padding = (8, 8), scale = 1.03)
 
-	# construct a blob from the frame, pass it through the network,
+	'''# construct a blob from the frame, pass it through the network,
 	# obtain our output predictions, and initialize the list of
 	# bounding box rectangles
 	blob = cv2.dnn.blobFromImage(frame, 1.0, (W, H),
@@ -78,6 +84,17 @@ while True:
 			(startX, startY, endX, endY) = box.astype("int")
 			cv2.rectangle(frame, (startX, startY), (endX, endY),
 				(0, 255, 0), 2)
+			#print("startx: ", startX, "starty:", startY)
+			#print("endx: ", endX, "endy:", endY)
+
+			# draw the prediction on the frame
+			#label = "{}: {:.2f}%".format(CLASSES[box],
+			#	confidence * 100)
+			#cv2.rectangle(frame, (startX, startY), (endX, endY),
+			#	COLORS[box], 2)
+			#y = startY - 15 if startY - 15 > 15 else startY + 15
+			#cv2.putText(frame, label, (startX, y),
+			#	cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[box], 2)'''
 
 	# update our centroid tracker using the computed set of bounding
 	# box rectangles
@@ -91,6 +108,7 @@ while True:
 		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 		cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
+		print(centroid[0], centroid[1])
 
 	# show the output frame
 	cv2.imshow("Frame", frame)
