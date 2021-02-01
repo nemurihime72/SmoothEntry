@@ -42,6 +42,12 @@ vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
 p1List = []
+p2List = []
+leftLocationList = []
+rightLocationList = []
+bottomLocationList = []
+interval = time.time() + 60
+
 # loop over the frames from the video stream
 while True:
 	# read the next frame from the video stream and resize it
@@ -74,9 +80,12 @@ while True:
 		text = "ID {}".format(objectID)
 		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 		cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
-		
-		if objectID == 1:	
+
+		if objectID == 0:	
+			print([centroid[0], centroid[1]])
 			p1List.append([centroid[0], centroid[1]])
+		elif objectID == 1:	
+			p2List.append([centroid[0], centroid[1]])
 
 
 	# show the output frame
@@ -89,6 +98,10 @@ while True:
 	elif key == ord("p"):	
 		for i in p1List:	
 			print(i)
+	elif time.time() > interval:	
+		for i in p1List:	
+			print(i)
+		if []
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()
