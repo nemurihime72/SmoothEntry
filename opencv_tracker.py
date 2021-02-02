@@ -1,3 +1,5 @@
+# method 2
+
 from imutils.video import VideoStream
 from imutils.video import FPS
 import argparse

@@ -1,3 +1,5 @@
+# method 3
+
 # from pyimagesearch, modified for use for assignment
 
 # USAGE

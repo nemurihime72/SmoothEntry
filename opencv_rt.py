@@ -1,3 +1,5 @@
+# method 1
+
 from __future__ import print_function
 #from imutils.video.pivideostream import PiVideoStream
 from imutils.video import FPS
