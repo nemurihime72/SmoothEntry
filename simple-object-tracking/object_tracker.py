@@ -9,6 +9,8 @@
 from pyimagesearch.centroidtracker import CentroidTracker
 from imutils.video import VideoStream
 from imutils.video import FPS
+from threading import Thread
+from playsound import playsound
 import nms
 #from imutils.object_detection import non_max_suppression	
 import numpy as np
@@ -53,12 +55,15 @@ while True:
 	# read the next frame from the video stream and resize it
 	frame = vs.read()
 	frame = imutils.resize(frame, width=400)
-	cv2.line(frame, (150, 0), (150, 300), (0, 255, 255), 2)
+	#print(checkIn)
+		
 
 	# if the frame dimensions are None, grab them
 	if W is None or H is None:
 		(H, W) = frame.shape[:2]
-		
+	
+	cv2.line(frame, (150, 0), (150, H), (0, 255, 255), 2)
+
 	bounding_box_coordinates, weights = HOGCV.detectMultiScale(frame, winStride = (6, 6), padding = (8, 8), scale = 1.05)
 	rects = []
 	person = 0
@@ -77,19 +82,27 @@ while True:
 	personRight = 0	
 
 	# loop over the tracked objects
-	for (objectID, centroid) in objects.items():
+	for (objectID, centroid) in objects.items():	
+		if centroid[0] < 150:	
+			personLeft += 1
 		# draw both the ID of the object and the centroid of the
 		# object on the output frame
 		text = "ID {}".format(objectID)
 		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+		cv2.putText(frame, f'person left {personLeft}', (10, H-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,0,255), 1)
 		cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
-		if centroid[0] < 150:	
-			personLeft += 1
-
-		if centroid[0] < 150 and checkIn == False and personLeft > 0:	
+		
+		if checkIn == False and personLeft > 0:	
 			print("beep")
-		elif centroid[0] < 150 and checkIn == True and personLeft > 1:	
+			#playsound('C:\\Users\\Ryan\\Documents\\SmoothEntry\\simple-object-tracking\\sounds\\beep.mp3')
+		elif checkIn == True and personLeft == 1:	
+			print("customer entered store")
+			time.sleep(1)
+			checkIn = False
+		elif checkIn == True and personLeft > 1:	
 			print("beep beep")
+			#playsound('C:\\Users\\Ryan\\Documents\\SmoothEntry\\simple-object-tracking\\sounds\\beep.mp3')
+
 
 
 	# show the output frame
@@ -110,3 +123,4 @@ while True:
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()
+
