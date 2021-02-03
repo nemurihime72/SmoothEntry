@@ -40,7 +40,7 @@ HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
 # initialize the video stream and allow the camera sensor to warmup
 print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+vs = VideoStream(src=1).start()
 time.sleep(2.0)
 
 p1List = []
@@ -103,7 +103,7 @@ while True:
 	elif time.time() > interval:	
 		for i in p1List:	
 			print(i)
-		if []
+		
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()

@@ -44,6 +44,7 @@ CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
 	"dog", "horse", "motorbike", "person", "pottedplant", "sheep",
 	"sofa", "train", "tvmonitor"]
 
+
 # load our serialized model from disk
 print("[INFO] loading model...")
 net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
@@ -51,7 +52,7 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # if a video path was not supplied, grab a reference to the webcam
 if not args.get("input", False):
 	print("[INFO] starting video stream...")
-	vs = VideoStream(src=0).start()
+	vs = VideoStream(src=1).start()
 	time.sleep(2.0)
 
 # otherwise, grab a reference to the video file
@@ -70,7 +71,7 @@ H = None
 # instantiate our centroid tracker, then initialize a list to store
 # each of our dlib correlation trackers, followed by a dictionary to
 # map each unique object ID to a TrackableObject
-ct = CentroidTracker(maxDisappeared=40, maxDistance=50)
+ct = CentroidTracker(maxDisappeared=80, maxDistance=80)
 trackers = []
 trackableObjects = {}
 
