@@ -34,33 +34,32 @@ ct = CentroidTracker()
 HOGCV = cv2.HOGDescriptor()
 HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
+checkIn = False
+
+personLeft = 0
+personRight = 0
+
 # load our serialized model from disk
-#print("[INFO] loading model...")
+#print("[INFO] loading model...")w
 #net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 
 # initialize the video stream and allow the camera sensor to warmup
 print("[INFO] starting video stream...")
-vs = VideoStream(src=1).start()
+vs = VideoStream(src=0).start()
 time.sleep(2.0)
-
-p1List = []
-p2List = []
-leftLocationList = []
-rightLocationList = []
-bottomLocationList = []
-interval = time.time() + 60
 
 # loop over the frames from the video stream
 while True:
 	# read the next frame from the video stream and resize it
 	frame = vs.read()
 	frame = imutils.resize(frame, width=400)
+	cv2.line(frame, (150, 0), (150, 300), (0, 255, 255), 2)
 
 	# if the frame dimensions are None, grab them
 	if W is None or H is None:
 		(H, W) = frame.shape[:2]
 		
-	bounding_box_coordinates, weights = HOGCV.detectMultiScale(frame, winStride = (6, 6), padding = (16, 16), scale = 1.05)
+	bounding_box_coordinates, weights = HOGCV.detectMultiScale(frame, winStride = (6, 6), padding = (8, 8), scale = 1.05)
 	rects = []
 	person = 0
 	for x,y,w,h in bounding_box_coordinates:
@@ -74,6 +73,8 @@ while True:
 	# update our centroid tracker using the computed set of bounding
 	# box rectangles
 	objects = ct.update(rects)
+	personLeft = 0
+	personRight = 0	
 
 	# loop over the tracked objects
 	for (objectID, centroid) in objects.items():
@@ -82,12 +83,13 @@ while True:
 		text = "ID {}".format(objectID)
 		cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 		cv2.circle(frame, (centroid[0], centroid[1]), 4, (0, 255, 0), -1)
+		if centroid[0] < 150:	
+			personLeft += 1
 
-		if objectID == 0:	
-			print([centroid[0], centroid[1]])
-			p1List.append([centroid[0], centroid[1]])
-		elif objectID == 1:	
-			p2List.append([centroid[0], centroid[1]])
+		if centroid[0] < 150 and checkIn == False and personLeft > 0:	
+			print("beep")
+		elif centroid[0] < 150 and checkIn == True and personLeft > 1:	
+			print("beep beep")
 
 
 	# show the output frame
@@ -97,12 +99,13 @@ while True:
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
 		break
-	elif key == ord("p"):	
-		for i in p1List:	
-			print(i)
-	elif time.time() > interval:	
-		for i in p1List:	
-			print(i)
+	elif key == ord("w"):	
+		checkIn = True
+		print(checkIn)
+
+	elif key == ord("e"):	
+		checkIn = False
+		print(checkIn)
 		
 # do a bit of cleanup
 cv2.destroyAllWindows()

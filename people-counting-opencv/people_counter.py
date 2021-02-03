@@ -24,16 +24,16 @@ import cv2
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--prototxt", required=True,
-	help="path to Caffe 'deploy' prototxt file")
+	help="path to Caffe 'deploy' prototxt file",)
 ap.add_argument("-m", "--model", required=True,
 	help="path to Caffe pre-trained model")
 ap.add_argument("-i", "--input", type=str,
 	help="path to optional input video file")
 ap.add_argument("-o", "--output", type=str,
 	help="path to optional output video file")
-ap.add_argument("-c", "--confidence", type=float, default=0.4,
+ap.add_argument("-c", "--confidence", type=float, default=0.9,
 	help="minimum probability to filter weak detections")
-ap.add_argument("-s", "--skip-frames", type=int, default=30,
+ap.add_argument("-s", "--skip-frames", type=int, default=60,
 	help="# of skip frames between detections")
 args = vars(ap.parse_args())
 
@@ -52,7 +52,7 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # if a video path was not supplied, grab a reference to the webcam
 if not args.get("input", False):
 	print("[INFO] starting video stream...")
-	vs = VideoStream(src=1).start()
+	vs = VideoStream(src=0).start()
 	time.sleep(2.0)
 
 # otherwise, grab a reference to the video file
@@ -200,10 +200,9 @@ while True:
 	# centroids with (2) the newly computed object centroids
 	objects = ct.update(rects)
 
+
 	# loop over the tracked objects
-	for (objectID, centroid) in objects.items():	
-		totalLeft = 0
-		totalRight = 0
+	for (objectID, centroid) in objects.items():		
 		# check to see if a trackable object exists for the current
 		# object ID
 		to = trackableObjects.get(objectID, None)
@@ -215,6 +214,7 @@ while True:
 		# otherwise, there is a trackable object so we can utilize it
 		# to determine direction
 		else:
+			
 			# the difference between the y-coordinate of the *current*
 			# centroid and the mean of *previous* centroids will tell
 			# us in which direction the object is moving (negative for
@@ -228,14 +228,16 @@ while True:
 				# if the direction is negative (indicating the object
 				# is moving up) AND the centroid is above the center
 				# line, count the object
-				if direction > 0 and centroid[0] < 100:
+				print(centroid[0])
+
+				if centroid[0] < 100:
 					totalLeft += 1
 					to.counted = True
 
 				# if the direction is positive (indicating the object
 				# is moving down) AND the centroid is below the
 				# center line, count the object
-				elif direction < 0 and centroid[0] > 100:
+				elif centroid[0] > 100:
 					totalRight += 1
 					to.counted = True
 			
@@ -283,15 +285,12 @@ while True:
 		break
 
 	elif key == ord("w"):	
+		print("checkin true")	
 		checkIn = True
-		print("check in true")
-		startTime = time.time()
-		elapsedTime = time.time() - startTime
-		if elapsedTime > 30:	
-			checkIn = False
-			print("check in false")
 
-
+	elif key == ord("e"):	
+		print("checkin false")
+		checkIn = False
 	# increment the total number of frames processed thus far and
 	# then update the FPS counter
 	totalFrames += 1
