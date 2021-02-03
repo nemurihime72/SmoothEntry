@@ -80,6 +80,8 @@ totalFrames = 0
 totalLeft = 0
 totalRight = 0
 
+checkIn = False
+
 # start the frames per second throughput estimator
 fps = FPS().start()
 
@@ -198,7 +200,9 @@ while True:
 	objects = ct.update(rects)
 
 	# loop over the tracked objects
-	for (objectID, centroid) in objects.items():
+	for (objectID, centroid) in objects.items():	
+		totalLeft = 0
+		totalRight = 0
 		# check to see if a trackable object exists for the current
 		# object ID
 		to = trackableObjects.get(objectID, None)
@@ -210,7 +214,7 @@ while True:
 		# otherwise, there is a trackable object so we can utilize it
 		# to determine direction
 		else:
-			# the difference between the y-c				oordinate of the *current*
+			# the difference between the y-coordinate of the *current*
 			# centroid and the mean of *previous* centroids will tell
 			# us in which direction the object is moving (negative for
 			# 'up' and positive for 'down')
@@ -223,17 +227,24 @@ while True:
 				# if the direction is negative (indicating the object
 				# is moving up) AND the centroid is above the center
 				# line, count the object
-				if direction < 0 and centroid[0] < 100:
+				if direction > 0 and centroid[0] < 100:
 					totalLeft += 1
 					to.counted = True
 
 				# if the direction is positive (indicating the object
 				# is moving down) AND the centroid is below the
 				# center line, count the object
-				elif direction > 0 and centroid[0] > 100:
+				elif direction < 0 and centroid[0] > 100:
 					totalRight += 1
 					to.counted = True
-
+			
+			if checkIn == False:	
+				if totalLeft > 0:	
+					print("beep")
+			elif checkIn == True:	
+				if totalLeft > 1:	
+					print("beep")
+ 
 		# store the trackable object in our dictionary
 		trackableObjects[objectID] = to
 
@@ -269,6 +280,16 @@ while True:
 	# if the `q` key was pressed, break from the loop
 	if key == ord("q"):
 		break
+
+	elif key == ord("w"):	
+		checkIn = True
+		print("check in true")
+		startTime = time.time()
+		elapsedTime = time.time() - startTime
+		if elapsedTime > 30:	
+			checkIn = False
+			print("check in false")
+
 
 	# increment the total number of frames processed thus far and
 	# then update the FPS counter
