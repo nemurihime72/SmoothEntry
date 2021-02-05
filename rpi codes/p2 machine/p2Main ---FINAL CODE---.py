@@ -305,13 +305,16 @@ def diplay_thermal_camera_view():
 def get_temperature():
     i2c_bus = busio.I2C(board.SCL, board.SDA)
     sensor = adafruit_amg88xx.AMG88XX(i2c_bus)
-    time.sleep(0.5)
-    try:
-        firebase.patch("/users/" + "A52121D241", {"latest_temp": sensor.pixels[4][2] + 8})
-        return True
-    except:
-        print("Could not update the users temperature!")
-        return False
+    temperature = sensor.pixels[4][2] + 8
+    if temperature < 37.5:
+        try:
+            firebase.patch("/users/" + "A52121D241", {"latest_temp": sensor.pixels[4][2] + 8})
+            return True
+        except:
+            print("Could not update the users temperature!")
+            return False
+    else:
+        return "sick"
 
     
     
@@ -378,19 +381,25 @@ def check_in():
                 
 #Linus
 def display_success_lcd():
-   print("Writing to display")
-   display.display_string("Successful!", 1)
-   display.display_string("Temperature: " + "{0:.2f}".format(float(firebase.get("/users/A52121D241/", "latest_temp"))),2)
-   time.sleep(2)
+    print("Writing to display")
+    display.display_string("Successful!", 1)
+    display.display_string("Temp: " + "{0:.2f}".format(float(firebase.get("/users/A52121D241/", "latest_temp"))),2)
+    time.sleep(2)
 
-   display.clear()
+    display.clear()
+
+def display_sick_lcd():
+    print("Writing to display")
+    display.display_string("You sick!", 1)
+    display.display_string("Go home!", 2)
 
 def display_failure_lcd():
-   print("Writing to display")
-   display.display_string("Check-in unsuccessful!", 1)
-   time.sleep(2)
+    print("Writing to display")
+    display.display_string("Check-in", 1)
+    display.display_string("unsuccessful!", 2)
+    time.sleep(2)
 
-   display.clear()
+    display.clear()
 
 def blinking(pin):
     #turns on LED for 0.1 seconds
@@ -498,13 +507,13 @@ def servo(direction):
     
     while True:
         #key = input()
-        if direction == 'down:
-            # move down
-            print('down')
-            wiringpi.pwmWrite(18, 200)
-        elif direction == 'up':
+        if direction == 'up':
             # move up
             print('up')
+            wiringpi.pwmWrite(18, 200)
+        elif direction == 'down':
+            # move down
+            print('down')
             wiringpi.pwmWrite(18, 100)
             if detect_face() == True:
                 direction = 'stop'
@@ -557,7 +566,8 @@ def smoothentry():
             temp = get_temperature()
             if success == True and temp == True:
                 display_success_lcd()
-                
+            elif temp == "sick":
+                display_sick_lcd()
             else:
                 display_failure_lcd()
 
