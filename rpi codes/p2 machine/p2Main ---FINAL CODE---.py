@@ -498,13 +498,13 @@ def servo(direction):
     
     while True:
         #key = input()
-        if direction == 'up':
-            # move up
-            print('up')
-            wiringpi.pwmWrite(18, 200)
-        elif direction == 'down':
+        if direction == 'down:
             # move down
             print('down')
+            wiringpi.pwmWrite(18, 200)
+        elif direction == 'up':
+            # move up
+            print('up')
             wiringpi.pwmWrite(18, 100)
             if detect_face() == True:
                 direction = 'stop'
