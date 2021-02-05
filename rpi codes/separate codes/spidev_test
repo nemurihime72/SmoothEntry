@@ -1,0 +1,12 @@
+--2020-11-20 01:54:09--  https://raw.githubusercontent.com/raspberrypi/linux/rpi-3.10.y/Documentation/spi/spidev_text.c
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 151.101.8.133
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|151.101.8.133|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2020-11-20 01:54:10 ERROR 404: Not Found.
+
+--2020-11-20 01:54:10--  http://gcc/
+Resolving gcc (gcc)... failed: Name or service not known.
+wget: unable to resolve host address ‘gcc’
+--2020-11-20 01:54:10--  http://spidev_test.c/
+Resolving spidev_test.c (spidev_test.c)... failed: Name or service not known.
+wget: unable to resolve host address ‘spidev_test.c’
